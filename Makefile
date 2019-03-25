@@ -27,5 +27,11 @@ tag-latest: ## please call build-latest instead
 
 build-latest: build tag-latest ## build and tag as latest
 
-push: build-latest ## push image to repo
-	@docker push ${NAME}
+push-latest: build-latest ## push image to repo
+	@docker push ${IMG}
+	@docker push ${GIT_TAGGED}
+	@docker push ${LATEST}
+
+push: build ## push image to repo
+	@docker push ${IMG}
+	@docker push ${GIT_TAGGED}
