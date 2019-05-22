@@ -50,6 +50,13 @@ if $MYSQL_AUTOCONF ; then
   fi
 
 fi
+
+if [[ ! -z "${TZ}" ]]; then
+  echo "Setting Timezone to $TZ"
+  cp /usr/share/zoneinfo/$TZ /etc/localtime
+  echo $TZ > /etc/timezone
+fi
+
 # extra startup scripts
 for f in /docker-entrypoint.d/*; do
     case "$f" in
@@ -58,6 +65,7 @@ for f in /docker-entrypoint.d/*; do
     esac
     echo
 done
+
 
 # Run pdns server
 trap "pdns_control quit" SIGHUP SIGINT SIGTERM
