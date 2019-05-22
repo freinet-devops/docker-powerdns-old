@@ -3,7 +3,7 @@ MAINTAINER Sebastian Pitsch <pitsch@freinet.de>
 # Based on https://hub.docker.com/r/psitrax/powerdns/
 
 ENV REFRESHED_AT="2019-25-03" \
-    POWERDNS_VERSION=4.1.5 \
+    POWERDNS_VERSION=4.1.8 \
     MYSQL_AUTOCONF=true \
     MYSQL_PREPARE_DB=true \
     MYSQL_PORT="3306"
