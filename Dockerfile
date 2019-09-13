@@ -2,8 +2,8 @@ FROM alpine:3.7
 MAINTAINER Sebastian Pitsch <pitsch@freinet.de>
 # Based on https://hub.docker.com/r/psitrax/powerdns/
 
-ENV REFRESHED_AT="2019-07-02" \
-    POWERDNS_VERSION=4.1.10 \
+ENV REFRESHED_AT="2019-09-13" \
+    POWERDNS_VERSION=4.1.13 \
     MYSQL_AUTOCONF=true \
     MYSQL_PREPARE_DB=true \
     MYSQL_PORT="3306"

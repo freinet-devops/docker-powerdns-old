@@ -1,9 +1,11 @@
-NAME   := freinet/powerdns
 COMMIT_ID := $$(git log -1 --date=short --pretty=format:%cd.%h)
 TAG   := $$(git describe --exact-match --tags $$(git log -n1 --pretty='%h'))
+
+NAME   := freinet/powerdns
 IMG    := ${NAME}:${COMMIT_ID}
 GIT_TAGGED := ${NAME}:${TAG}
 LATEST := ${NAME}:latest
+TEST := ${NAME}:test
 
 # HELP
 # This will output the help for each task
@@ -19,19 +21,17 @@ build: ## build the container
 	@docker build -t ${IMG} .
 	@if [ ! -z $$(git describe --exact-match --tags $$(git log -n1 --pretty='%h')) ] ; then \
 		echo ${GIT_TAGGED} ; \
-		docker tag ${IMG} ${GIT_TAGGED} ; \
+		docker tag ${IMG} ${GIT_TAGGED}; \
 	fi ;
 
-tag-latest: ## please call build-latest instead
+build-test:
+	@docker build -t ${IMG} .
+	@docker tag ${IMG} ${TEST}
+
+
+build-latest:
+	@docker build -t ${IMG} .
 	@docker tag ${IMG} ${LATEST}
 
-build-latest: build tag-latest ## build and tag as latest
-
-push-latest: build-latest ## push image to repo
-	@docker push ${IMG}
-	@docker push ${GIT_TAGGED}
-	@docker push ${LATEST}
-
-push: build ## push image to repo
-	@docker push ${IMG}
-	@docker push ${GIT_TAGGED}
+push: build-latest ## push image to repo
+	@docker push ${NAME}
