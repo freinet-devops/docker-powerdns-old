@@ -1,0 +1,8 @@
+command:
+  pdnsutil:
+    exit-status: 0
+    stderr: []
+    timeout: 10000
+process:
+  pdns_server:
+    running: true

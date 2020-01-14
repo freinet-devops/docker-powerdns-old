@@ -1,14 +1,15 @@
 FROM alpine:3.7
 MAINTAINER Sebastian Pitsch <pitsch@freinet.de>
+LABEL Name="powerdns" Version="4.1.13" maintainer="Sebastian Pitsch <pitsch@freinet.de>"
 # Based on https://hub.docker.com/r/psitrax/powerdns/
 
-ENV REFRESHED_AT="2019-09-13" \
+ENV REFRESHED_AT="2020-01-14" \
     POWERDNS_VERSION=4.1.13 \
     MYSQL_AUTOCONF=true \
     MYSQL_PREPARE_DB=true \
     MYSQL_PORT="3306"
 
-RUN apk --update add mysql-client mariadb-client-libs libstdc++ libgcc && \
+RUN apk --update add mysql-client mariadb-client-libs libstdc++ libgcc bash && \
     apk add --virtual build-deps \
       g++ make mariadb-dev curl boost-dev && \
     curl -sSL https://downloads.powerdns.com/releases/pdns-$POWERDNS_VERSION.tar.bz2 | tar xj -C /tmp && \
@@ -20,6 +21,7 @@ RUN apk --update add mysql-client mariadb-client-libs libstdc++ libgcc && \
     addgroup -S pdns 2>/dev/null && \
     adduser -S -D -H -h /var/empty -s /bin/false -G pdns -g pdns pdns 2>/dev/null && \
     apk del --purge build-deps && \
+    apk add boost-program_options && \
     rm -rf /tmp/pdns-$POWERDNS_VERSION /var/cache/apk/*
 
 RUN apk --update add tzdata
