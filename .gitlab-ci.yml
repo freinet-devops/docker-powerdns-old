@@ -30,7 +30,6 @@ docker_lint:
   script:
     - dockerfile_lint -p -f Dockerfile
   rules:
-    #- if: '$CI_COMMIT_REF_NAME == "master" && $CI_COMMIT_TAG != null'
     - if: '$CI_COMMIT_TAG != null'
 
 build_image:
@@ -49,7 +48,6 @@ build_image:
       fi
     - docker push $TEST_IMAGE
   rules:
-    #- if: '$CI_COMMIT_REF_NAME == "master" && $CI_COMMIT_TAG != null'
     - if: '$CI_COMMIT_TAG != null'
 
 test_image:
@@ -60,7 +58,6 @@ test_image:
   script:
     - dgoss run -e MYSQL_PREPARE_DB=false $TEST_IMAGE
   rules:
-    #- if: '$CI_COMMIT_REF_NAME == "master" && $CI_COMMIT_TAG != null'
     - if: '$CI_COMMIT_TAG != null'
 
 release_image:
@@ -80,6 +77,5 @@ release_image:
     - docker push $DOCKER_HUB_RELEASE_IMAGE
     - docker push $DOCKER_HUB_LATEST_IMAGE
   rules:
-    #- if: '$CI_COMMIT_REF_NAME == "master" && $CI_COMMIT_TAG != null'
     - if: '$CI_COMMIT_TAG != null'
 
