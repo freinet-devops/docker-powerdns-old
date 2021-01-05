@@ -7,6 +7,17 @@ set -e
 # treat everything except -- as exec cmd
 [ "${1:0:2}" != "--" ] && exec "$@"
 
+upgrade4_2string='--upgrade-to-4-2'
+params=$@
+if [ "$params" != "${params%"$upgrade4_2string"*}" ]; then
+    echo "$upgrade4_2string present in $params - running database migration..."
+    MYSQLCMD="mysql --host=${MYSQL_HOST} --user=${MYSQL_USER} --password=${MYSQL_PASS} -r -N"
+    MYSQLCMD="$MYSQLCMD $MYSQL_DB"
+    cat /etc/pdns/schema_changes/4.1.0_to_4.2.0_schema.mysql.sql | $MYSQLCMD
+    echo Schema upgraded. Exiting
+    exit 0
+fi
+
 if $MYSQL_AUTOCONF ; then
   # Set MySQL Credentials in pdns.conf
   sed -r -i "s/^[# ]*gmysql-host=.*/gmysql-host=${MYSQL_HOST}/g" /etc/pdns/pdns.conf
@@ -50,6 +61,8 @@ if $MYSQL_AUTOCONF ; then
   fi
 
 fi
+
+
 
 if [[ ! -z "${TZ}" ]]; then
   echo "Setting Timezone to $TZ"

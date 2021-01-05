@@ -1,9 +1,9 @@
 FROM alpine:3.11
-LABEL Name="powerdns" Version="4.1.14" maintainer="Sebastian Pitsch <pitsch@freinet.de>"
+LABEL Name="powerdns" Version="4.2.3" maintainer="Sebastian Pitsch <pitsch@freinet.de>"
 # Based on https://hub.docker.com/r/psitrax/powerdns/
 
-ENV REFRESHED_AT="2020-09-23" \
-    POWERDNS_VERSION=4.1.14 \
+ENV REFRESHED_AT="2021-01-04" \
+    POWERDNS_VERSION=4.2.3 \
     MYSQL_AUTOCONF=true \
     MYSQL_PREPARE_DB=true \
     MYSQL_PORT="3306"
@@ -14,7 +14,7 @@ RUN apk --update add mysql-client mariadb-connector-c-dev mariadb-connector-c li
     curl -sSL https://downloads.powerdns.com/releases/pdns-$POWERDNS_VERSION.tar.bz2 | tar xj -C /tmp && \
     cd /tmp/pdns-$POWERDNS_VERSION && \
     ./configure --prefix="" --exec-prefix=/usr --sysconfdir=/etc/pdns \
-      --with-modules="gmysql" --without-lua && \
+      --with-modules="gmysql" --disable-lua-records && \
     make && make install-strip && cd / && \
     mkdir -p /etc/pdns/conf.d && \
     addgroup -S pdns 2>/dev/null && \
@@ -28,6 +28,7 @@ RUN cp /usr/share/zoneinfo/Europe/Berlin /etc/localtime
 RUN echo "Europe/Berlin" > /etc/timezone
 
 ADD schema.sql pdns.conf /etc/pdns/
+ADD schema_changes /etc/pdns/schema_changes
 ADD entrypoint.sh /
 
 EXPOSE 53/tcp 53/udp
