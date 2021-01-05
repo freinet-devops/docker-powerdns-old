@@ -29,8 +29,6 @@ docker_lint:
   image: projectatomic/dockerfile-lint
   script:
     - dockerfile_lint -p -f Dockerfile
-  rules:
-    - if: '$CI_COMMIT_TAG != null'
 
 build_image:
   stage: build
@@ -47,8 +45,6 @@ build_image:
         docker build --label="baseid=$BASEID" -t $TEST_IMAGE .
       fi
     - docker push $TEST_IMAGE
-  rules:
-    - if: '$CI_COMMIT_TAG != null'
 
 test_image:
   stage: test
@@ -57,8 +53,6 @@ test_image:
     - docker pull $TEST_IMAGE
   script:
     - dgoss run -e MYSQL_PREPARE_DB=false $TEST_IMAGE
-  rules:
-    - if: '$CI_COMMIT_TAG != null'
 
 release_image:
   stage: release
