@@ -1,20 +1,22 @@
-FROM alpine:3.11
-LABEL Name="powerdns" Version="4.2.3" maintainer="Sebastian Pitsch <pitsch@freinet.de>"
+FROM alpine:3.13
+LABEL Name="powerdns" Version="4.2.3" maintainers="Sebastian Pitsch <pitsch@freinet.de>, Dominic Zöller <zoeller@freinet.de>"
 # Based on https://hub.docker.com/r/psitrax/powerdns/
 
-ENV REFRESHED_AT="2021-01-04" \
-    POWERDNS_VERSION=4.2.3 \
-    MYSQL_AUTOCONF=true \
-    MYSQL_PREPARE_DB=true \
-    MYSQL_PORT="3306"
+ENV POWERDNS_VERSION=4.4.1 \
+    MYSQL_DEFAULT_AUTOCONF=true \
+    MYSQL_DEFAULT_HOST="mysql" \
+    MYSQL_DEFAULT_PORT="3306" \
+    MYSQL_DEFAULT_USER="root" \
+    MYSQL_DEFAULT_PASS="root" \
+    MYSQL_DEFAULT_DB="pdns"
 
-RUN apk --update add mysql-client mariadb-connector-c-dev mariadb-connector-c libstdc++ libgcc bash && \
+RUN apk --update add bash libpq sqlite-libs libstdc++ libgcc mariadb-client mariadb-connector-c lua-dev curl-dev && \
     apk add --virtual build-deps \
-      g++ make mariadb-dev curl boost-dev && \
+      g++ make mariadb-dev postgresql-dev sqlite-dev curl boost-dev mariadb-connector-c-dev && \
     curl -sSL https://downloads.powerdns.com/releases/pdns-$POWERDNS_VERSION.tar.bz2 | tar xj -C /tmp && \
     cd /tmp/pdns-$POWERDNS_VERSION && \
     ./configure --prefix="" --exec-prefix=/usr --sysconfdir=/etc/pdns \
-      --with-modules="gmysql" --disable-lua-records && \
+      --with-modules="bind gmysql gpgsql gsqlite3" && \
     make && make install-strip && cd / && \
     mkdir -p /etc/pdns/conf.d && \
     addgroup -S pdns 2>/dev/null && \
@@ -23,12 +25,7 @@ RUN apk --update add mysql-client mariadb-connector-c-dev mariadb-connector-c li
     apk add boost-program_options && \
     rm -rf /tmp/pdns-$POWERDNS_VERSION /var/cache/apk/*
 
-RUN apk --update add tzdata
-RUN cp /usr/share/zoneinfo/Europe/Berlin /etc/localtime
-RUN echo "Europe/Berlin" > /etc/timezone
-
 ADD schema.sql pdns.conf /etc/pdns/
-ADD schema_changes /etc/pdns/schema_changes
 ADD entrypoint.sh /
 
 EXPOSE 53/tcp 53/udp

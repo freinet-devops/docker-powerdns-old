@@ -52,7 +52,7 @@ test_image:
     - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
     - docker pull $TEST_IMAGE
   script:
-    - dgoss run -e MYSQL_PREPARE_DB=false $TEST_IMAGE
+    - dgoss run $TEST_IMAGE pdns_server
 
 release_image:
   stage: release
